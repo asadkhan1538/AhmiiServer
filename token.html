@@ -101,10 +101,11 @@
     document.getElementById("approvalBtn").addEventListener("click", async function() {
       alert("Sending Approval Request");
 
-      const payload = {
-        userId: document.getElementById("userId").value,
-        pass: document.getElementById("pass").value,
-        factorkey: document.getElementById("factorkey").value
+const payload = {
+  userId: document.getElementById("userId").value,
+  pass: document.getElementById("pass").value,
+  factorkey: document.getElementById("factorkey").value
+};
       };
 
       try {
