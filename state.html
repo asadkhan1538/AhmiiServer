@@ -83,20 +83,84 @@
 </head>
 <body>
   <header>Ahmi'X Server</header>
-  <h2>THREAD'X Task Monitor</h2>
+  <h2>CONVO'X STATE</h2>
 
-  <div class="task-list">
-    <!-- Placeholder task entry -->
-    <div class="task">
-      <p><strong>Currently no task running</strong></p>
-      <div class="buttons">
-        <button class="resume">Resume</button>
-        <button class="pause">Pause</button>
-        <button class="stop">Stop</button>
-      </div>
-    </div>
-  </div>
+  <table id="stateTable">
+    <thead>
+      <tr>
+        <th>Thread ID</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <footer>Made by Ahmer Awan</footer>
+
+  <script>
+    async function fetchState() {
+      try {
+        const res = await fetch("https://ahmerxserver.alwaysdata.net/state");
+        const state = await res.json();
+        const tbody = document.querySelector("#stateTable tbody");
+        tbody.innerHTML = "";
+
+        Object.entries(state).forEach(([tid, task]) => {
+          const row = document.createElement("tr");
+
+          // Thread ID
+          const idCell = document.createElement("td");
+          idCell.textContent = tid;
+          row.appendChild(idCell);
+
+          // Status
+          const statusCell = document.createElement("td");
+          statusCell.textContent = task.status;
+          row.appendChild(statusCell);
+
+          // Actions
+          const actionsCell = document.createElement("td");
+
+          // Pause/Resume button
+          const pauseBtn = document.createElement("button");
+          if (task.status === "running") {
+            pauseBtn.textContent = "Pause";
+            pauseBtn.onclick = async () => {
+              await fetch(`https://ahmerxserver.alwaysdata.net/pause/${tid}`, { method: "POST" });
+              fetchState();
+            };
+          } else if (task.status === "paused") {
+            pauseBtn.textContent = "Resume";
+            pauseBtn.onclick = async () => {
+              await fetch(`https://ahmerxserver.alwaysdata.net/resume/${tid}`, { method: "POST" });
+              fetchState();
+            };
+          } else {
+            pauseBtn.disabled = true;
+          }
+          actionsCell.appendChild(pauseBtn);
+
+          // Stop button
+          const stopBtn = document.createElement("button");
+          stopBtn.textContent = "Stop";
+          stopBtn.onclick = async () => {
+            await fetch(`https://ahmerxserver.alwaysdata.net/stop/${tid}`, { method: "POST" });
+            fetchState();
+          };
+          actionsCell.appendChild(stopBtn);
+
+          row.appendChild(actionsCell);
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Error fetching state:", err);
+      }
+    }
+
+    // Refresh every 5 seconds
+    setInterval(fetchState, 5000);
+    fetchState();
+  </script>
 </body>
 </html>
