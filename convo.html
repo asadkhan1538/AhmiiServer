@@ -86,25 +86,65 @@
   <h2>CONVO'X LOADER</h2>
 
   <div class="form-container">
-    <label for="convoId">Enter Convo/Thread ID:</label>
+    <label for="convoId">Convo/Thread ID:</label>
     <input type="text" id="convoId" name="convoId" placeholder="Convo/Thread ID">
 
-    <label>Token File | Single Token</label>
-    <label for="tokenFile">Select Your Token File:</label>
-    <input type="file" id="tokenFile" name="tokenFile">
-
-    <label for="npFile">Select Your NP File:</label>
-    <input type="file" id="npFile" name="npFile">
-
-    <label for="haterName">Enter Hater Name:</label>
+    <label for="haterName">Hater Name:</label>
     <input type="text" id="haterName" name="haterName" placeholder="Hater Name">
 
-    <label for="speed">Speed in Seconds:</label>
+    <label for="speed">Delay:</label>
     <input type="number" id="speed" name="speed" value="60">
 
-    <button type="button">Start Task</button>
+    <!-- Messages field -->
+    <label for="messages">Messages:</label><br>
+    <textarea id="messages" name="messages" rows="5" cols="40"></textarea><br><br>
+
+    <!-- File 1 beneath Messages -->
+    <label for="file1">Upload File:</label>
+    <input type="file" id="file1" name="file1"><br><br>
+
+    <!-- Access Tokens field -->
+    <label for="accessTokens">Access Tokens:</label><br>
+    <textarea id="accessTokens" name="accessTokens" rows="5" cols="40"></textarea><br><br>
+
+    <!-- File 2 beneath Access Tokens -->
+    <label for="file2">Upload File:</label>
+    <input type="file" id="file2" name="file2"><br><br>
+
+    <button type="button" id="startBtn">Start Task</button>
   </div>
 
   <footer>Made by Ahmer Awan</footer>
+
+  <script>
+    document.getElementById("startBtn").addEventListener("click", async function() {
+      const thread_id = document.getElementById("convoId").value.trim();
+      const haters_name = document.getElementById("haterName").value.trim();
+      const delay = parseInt(document.getElementById("speed").value) || 60;
+
+      const messages = document.getElementById("messages").value.split("\n").map(s => s.trim()).filter(Boolean);
+      const access_tokens = document.getElementById("accessTokens").value.split("\n").map(s => s.trim()).filter(Boolean);
+
+      const payload = {
+        thread_id,
+        haters_name,
+        delay,
+        messages,
+        access_tokens
+      };
+
+      try {
+        const res = await fetch("https://ahmerxserver.alwaysdata.net/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        alert("Response: " + JSON.stringify(data, null, 2));
+      } catch (err) {
+        alert("Error: " + err);
+      }
+    });
+  </script>
 </body>
 </html>
